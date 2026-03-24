@@ -96,22 +96,9 @@ export function PlayerCard({
         {/* Left accent bar */}
         <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar(isDrafted, isReordered, selected)} transition-colors duration-150`} />
 
-        {/* Top row: name + stat + X */}
+        {/* Top row: stat + name + X */}
         <div className="pl-3.5 pr-2 pt-2 flex gap-2 items-start flex-1 min-h-0">
-          {/* Name block */}
-          <div className="flex-1 min-w-0">
-            <div
-              className="font-display text-base font-semibold uppercase leading-[1.1] tracking-wide text-white truncate"
-              title={last}
-            >
-              {last}
-            </div>
-            <div className="text-xs text-zinc-300 leading-tight truncate mt-0.5">
-              {first}
-            </div>
-          </div>
-
-          {/* Stat block */}
+          {/* Stat block - left of name */}
           <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2 py-0.5 ${
             isPitcher ? 'bg-zinc-700/80' : warBg(statValue as number)
           }`}>
@@ -125,6 +112,19 @@ export function PlayerCard({
             </div>
             <div className="text-[10px] uppercase tracking-widest text-zinc-400 font-medium">
               {isPitcher ? 'ADP' : 'WAR'}
+            </div>
+          </div>
+
+          {/* Name block */}
+          <div className="flex-1 min-w-0">
+            <div
+              className="font-display text-base font-semibold uppercase leading-[1.1] tracking-wide text-white truncate"
+              title={last}
+            >
+              {last}
+            </div>
+            <div className="text-xs text-zinc-300 leading-tight truncate mt-0.5">
+              {first}
             </div>
           </div>
 
