@@ -11,7 +11,7 @@ import { ChevronRightIcon } from 'lucide-react';
 import type { Player } from '@/lib/types';
 import { playerKey } from '@/lib/types';
 
-const CARD_WIDTH = 168; // w-40 (160px) + gap (8px)
+const CARD_WIDTH = 200; // w-48 (192px) + gap (8px)
 const LABEL_WIDTH = 60; // w-12 (48px) + gap (12px)
 const PADDING = 48; // page padding
 
@@ -102,7 +102,7 @@ export function PositionRow({
         {hasMore && (
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="shrink-0 w-40 rounded-xl border border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors cursor-pointer min-h-[72px]"
+            className="shrink-0 w-48 rounded-xl border border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors cursor-pointer min-h-[72px]"
           >
             <ChevronRightIcon className="size-5" />
             <span className="text-xs font-medium">
