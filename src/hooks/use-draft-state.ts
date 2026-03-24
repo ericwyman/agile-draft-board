@@ -7,30 +7,40 @@ const STORAGE_KEY = 'agile-draft-board-state';
 type DraftStateData = {
   dismissed: string[];
   drafted: string[];
+  orderOverrides: Record<string, string[]>;
 };
 
 function loadState(): DraftStateData {
-  if (typeof window === 'undefined') return { dismissed: [], drafted: [] };
+  if (typeof window === 'undefined') return { dismissed: [], drafted: [], orderOverrides: {} };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { dismissed: [], drafted: [] };
-    return JSON.parse(raw) as DraftStateData;
+    if (!raw) return { dismissed: [], drafted: [], orderOverrides: {} };
+    const parsed = JSON.parse(raw);
+    return {
+      dismissed: parsed.dismissed || [],
+      drafted: parsed.drafted || [],
+      orderOverrides: parsed.orderOverrides || {},
+    };
   } catch {
-    return { dismissed: [], drafted: [] };
+    return { dismissed: [], drafted: [], orderOverrides: {} };
   }
 }
 
 export function useDraftState() {
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set(loadState().dismissed));
   const [drafted, setDrafted] = useState<Set<string>>(() => new Set(loadState().drafted));
+  const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>(
+    () => loadState().orderOverrides
+  );
 
   useEffect(() => {
     const data: DraftStateData = {
       dismissed: Array.from(dismissed),
       drafted: Array.from(drafted),
+      orderOverrides,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [dismissed, drafted]);
+  }, [dismissed, drafted, orderOverrides]);
 
   const dismiss = useCallback((key: string) => {
     setDismissed((prev) => new Set(prev).add(key));
@@ -51,9 +61,19 @@ export function useDraftState() {
   const isDismissed = useCallback((key: string) => dismissed.has(key), [dismissed]);
   const isDrafted = useCallback((key: string) => drafted.has(key), [drafted]);
 
+  const setPositionOrder = useCallback((position: string, keys: string[]) => {
+    setOrderOverrides((prev) => ({ ...prev, [position]: keys }));
+  }, []);
+
+  const getPositionOrder = useCallback(
+    (position: string): string[] | undefined => orderOverrides[position],
+    [orderOverrides]
+  );
+
   const reset = useCallback(() => {
     setDismissed(new Set());
     setDrafted(new Set());
+    setOrderOverrides({});
   }, []);
 
   return {
@@ -64,6 +84,8 @@ export function useDraftState() {
     undraft,
     isDismissed,
     isDrafted,
+    setPositionOrder,
+    getPositionOrder,
     reset,
   };
 }
