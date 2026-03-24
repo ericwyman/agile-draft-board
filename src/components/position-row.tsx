@@ -62,11 +62,12 @@ export function PositionRow({
     (key) => !isDismissed(key) && playerMap.has(key)
   );
 
+  const LOAD_MORE_BATCH = 10;
   const totalVisible = allVisibleKeys.length;
-  const loadedCount = cardsPerPage * (page + 1);
+  const loadedCount = cardsPerPage + page * LOAD_MORE_BATCH;
   const displayKeys = allVisibleKeys.slice(0, loadedCount);
   const hasMore = loadedCount < totalVisible;
-  const remaining = totalVisible - loadedCount;
+  const remaining = Math.min(LOAD_MORE_BATCH, totalVisible - loadedCount);
 
   return (
     <div ref={containerRef} className="flex gap-3 items-start">
