@@ -71,7 +71,7 @@ export function PositionRow({
 
   return (
     <div ref={containerRef} className="flex gap-3 items-start">
-      <div className="w-12 shrink-0 py-3 text-center font-bold text-sm bg-secondary rounded-lg">
+      <div className="w-12 shrink-0 py-3 text-center font-display font-bold text-sm uppercase tracking-wider text-zinc-400 bg-zinc-900/60 rounded-sm border-l-2 border-zinc-700">
         {position}
       </div>
       <div
@@ -102,11 +102,11 @@ export function PositionRow({
         {hasMore && (
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="shrink-0 w-48 rounded-xl border border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors cursor-pointer min-h-[72px]"
+            className="shrink-0 w-48 rounded-sm border border-dashed border-zinc-700/50 flex flex-col items-center justify-center gap-1 text-zinc-600 hover:border-zinc-500 hover:text-zinc-400 transition-colors cursor-pointer min-h-[68px] bg-zinc-900/30"
           >
-            <ChevronRightIcon className="size-5" />
-            <span className="text-xs font-medium">
-              +{remaining} more
+            <ChevronRightIcon className="size-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              +{remaining}
             </span>
           </button>
         )}

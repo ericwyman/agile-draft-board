@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Card, CardHeader, CardTitle, CardAction, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
 import type { Player } from '@/lib/types';
 
@@ -18,12 +15,32 @@ type PlayerCardProps = {
 };
 
 function formatName(name: string): { last: string; first: string } {
-  // Data comes as "First Last" — split to display as "Last\nFirst"
   const parts = name.split(' ');
   if (parts.length === 1) return { last: parts[0], first: '' };
   const last = parts[parts.length - 1];
   const first = parts.slice(0, -1).join(' ');
   return { last, first };
+}
+
+function warColor(war: number): string {
+  if (war >= 5) return 'text-amber-400';
+  if (war >= 3) return 'text-emerald-400';
+  if (war >= 1.5) return 'text-sky-400';
+  return 'text-zinc-400';
+}
+
+function warBg(war: number): string {
+  if (war >= 5) return 'bg-amber-400/10';
+  if (war >= 3) return 'bg-emerald-400/10';
+  if (war >= 1.5) return 'bg-sky-400/10';
+  return 'bg-zinc-400/8';
+}
+
+function accentBar(isDrafted: boolean, isReordered: boolean, selected: boolean): string {
+  if (isDrafted) return 'bg-emerald-500';
+  if (isReordered) return 'bg-amber-500';
+  if (selected) return 'bg-zinc-500';
+  return 'bg-zinc-700';
 }
 
 export function PlayerCard({
@@ -49,88 +66,104 @@ export function PlayerCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.4 : 1,
     zIndex: isDragging ? 50 : undefined,
   };
 
   const isPitcher = position === 'SP' || position === 'RP';
-  const statLabel = isPitcher ? 'ADP' : 'WAR';
   const statValue = isPitcher ? player.adp : player.war;
   const { last, first } = formatName(player.name);
   const showDraft = !isDrafted && (selected || isReordered);
 
   return (
     <div ref={setNodeRef} style={style} className="shrink-0">
-      <Card
-        size="sm"
-        className={`w-48 cursor-grab active:cursor-grabbing touch-none transition-colors ${
-          isDrafted
-            ? 'ring-2 ring-emerald-500/60 bg-emerald-950/30'
-            : isReordered
-              ? 'ring-1 ring-amber-500/50'
-              : selected
-                ? 'ring-1 ring-primary/40'
-                : ''
-        } ${isDragging ? 'shadow-lg shadow-primary/20' : ''}`}
+      <div
+        className={`
+          group relative w-48 overflow-hidden rounded-sm
+          cursor-grab active:cursor-grabbing touch-none
+          transition-all duration-150
+          ${isDrafted
+            ? 'bg-emerald-950/40 shadow-[0_0_12px_rgba(16,185,129,0.08)]'
+            : 'bg-zinc-900/80 hover:bg-zinc-900'
+          }
+          ${isDragging ? 'shadow-2xl shadow-black/40 scale-[1.02]' : ''}
+        `}
         onClick={() => setSelected((s) => !s)}
         {...attributes}
         {...listeners}
       >
-        <CardHeader className="gap-0 pb-0">
-          <div className="min-w-0">
-            <CardTitle className="text-sm font-bold leading-tight">
-              {last}
-            </CardTitle>
-            {first && (
-              <div className="text-xs text-muted-foreground leading-tight">
-                {first}
-              </div>
-            )}
-          </div>
-          <CardAction>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={(e) => { e.stopPropagation(); onDismiss(); }}
-              aria-label={`Dismiss ${player.name}`}
-            >
-              <XIcon className="size-3.5" />
-            </Button>
-          </CardAction>
-        </CardHeader>
+        {/* Left accent bar */}
+        <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar(isDrafted, isReordered, selected)} transition-colors duration-150`} />
 
-        <CardContent className="flex flex-col gap-2 pt-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">{player.team}</span>
+        {/* Dismiss button */}
+        <button
+          className="absolute top-1 right-1 z-10 size-5 flex items-center justify-center rounded-sm text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
+          onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+          aria-label={`Dismiss ${player.name}`}
+        >
+          <XIcon className="size-3" />
+        </button>
+
+        <div className="pl-3 pr-6 py-2 flex gap-3">
+          {/* Name block */}
+          <div className="flex-1 min-w-0">
+            <div
+              className="font-display text-base font-semibold uppercase leading-[1.1] tracking-wide text-zinc-100 truncate"
+              title={last}
+            >
+              {last}
+            </div>
+            <div className="text-[11px] text-zinc-500 leading-tight truncate">
+              {first}
+            </div>
+          </div>
+
+          {/* Stat block */}
+          <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2 py-0.5 ${
+            isPitcher ? 'bg-zinc-800/80' : warBg(statValue as number)
+          }`}>
+            <div className={`font-display text-lg font-bold leading-none tabular-nums ${
+              isPitcher ? 'text-zinc-300' : warColor(statValue as number)
+            }`}>
+              {isPitcher
+                ? Math.round(statValue as number)
+                : (statValue as number).toFixed(1)
+              }
+            </div>
+            <div className="text-[9px] uppercase tracking-widest text-zinc-500 font-medium">
+              {isPitcher ? 'ADP' : 'WAR'}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom info bar */}
+        <div className="pl-3 pr-2 pb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-medium text-zinc-500 tracking-wide">
+              {player.team}
+            </span>
             {player.subPosition && (
-              <Badge variant="secondary" className="text-[10px] h-4 px-1">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 bg-zinc-800 px-1.5 py-px rounded-sm">
                 {player.subPosition}
-              </Badge>
+              </span>
             )}
             {isDrafted && (
-              <Badge variant="outline" className="text-[10px] h-4 px-1 border-emerald-500/50 text-emerald-400">
-                MINE
-              </Badge>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-1.5 py-px rounded-sm">
+                Drafted
+              </span>
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {statLabel} <span className="text-foreground font-medium">{statValue}</span>
-            </span>
-            {showDraft && (
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={(e) => { e.stopPropagation(); onDraft(); }}
-                className="text-[11px] text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/50 h-5 px-2"
-              >
-                Draft
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          {showDraft && (
+            <button
+              className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 px-2.5 py-1 rounded-sm transition-colors"
+              onClick={(e) => { e.stopPropagation(); onDraft(); }}
+            >
+              Draft
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
