@@ -50,9 +50,118 @@ npm run scrape       # Re-scrape Fangraphs data → src/data/players.json
 - Preview deployments on PRs
 - Vercel CLI: `vercel` (preview) / `vercel --prod` (production)
 
+## Visual Design System
+
+### Aesthetic: "Stadium Scoreboard / Data Instrument"
+
+Utilitarian, high-contrast, dark-mode-only. Designed for rapid visual scanning during a live draft. Every pixel serves readability or state communication. No decoration.
+
+### Typography
+
+- **Display font**: `Oswald` (CSS: `font-display`) — condensed, bold, uppercase. Used for player last names, stat numbers, and position labels. Loaded via `next/font/google` with `--font-display` CSS variable.
+- **Body font**: `Geist` (CSS: `font-sans`) — clean sans-serif for first names, metadata, UI controls.
+- **Text sizes**: Last name `text-base`, first name `text-[11px]`, stat number `text-lg`, labels `text-[9px]`, metadata `text-[11px]`.
+- **Uppercase + tracking**: All labels, badges, and position tags use `uppercase tracking-wider` or `tracking-widest`.
+
+### Color Palette
+
+Dark zinc base, semantic accent colors for state:
+
+| Element | Color | Class |
+|---------|-------|-------|
+| Card background | zinc-900/80 | `bg-zinc-900/80` |
+| Card hover | zinc-900 | `hover:bg-zinc-900` |
+| Page background | shadcn dark theme | `bg-background` |
+| Primary text | zinc-100 | `text-zinc-100` |
+| Secondary text | zinc-500 | `text-zinc-500` |
+| Muted text | zinc-600 | `text-zinc-600` |
+| Drafted state | emerald-500 | accent bar, badge, glow |
+| Reordered state | amber-500 | accent bar |
+| Selected state | zinc-500 | accent bar |
+| Draft action | emerald-400 | button text + bg |
+| Dismiss action | zinc-600 → zinc-300 | hover transition |
+
+### WAR Stat Color Tiers
+
+Stats are color-coded for instant value recognition:
+
+| Tier | WAR | Text color | Background |
+|------|-----|-----------|------------|
+| Elite | 5.0+ | `text-amber-400` | `bg-amber-400/10` |
+| Strong | 3.0+ | `text-emerald-400` | `bg-emerald-400/10` |
+| Solid | 1.5+ | `text-sky-400` | `bg-sky-400/10` |
+| Below | <1.5 | `text-zinc-400` | `bg-zinc-400/8` |
+
+Pitcher ADP uses neutral `text-zinc-300` on `bg-zinc-800/80`.
+
+### Card Anatomy
+
+```
+┌─╴accent bar (4px, left edge, color = state)
+│
+│  LAST NAME          ╳ dismiss
+│  first name       ┌─────┐
+│                    │ 5.8 │ stat block
+│  TEA  LF  Drafted  │ WAR │
+│               [Draft] └─────┘
+└─────────────────────────────┘
+```
+
+- **Width**: `w-48` (192px). Constant used in `position-row.tsx` as `CARD_WIDTH = 200` (192 + 8px gap).
+- **Corners**: `rounded-sm` (sharp, utilitarian).
+- **Left accent bar**: `w-1 absolute left-0 top-0 bottom-0`. Color set by `accentBar()` helper.
+- **Stat block**: Right-aligned, `rounded-sm`, contains large `tabular-nums` value + tiny label.
+- **Dismiss (X)**: `absolute top-1 right-1`, `size-5` hit area, `size-3` icon. Near-invisible until hover.
+- **Draft button**: Conditional — only rendered when `selected || isReordered`. Uses `bg-emerald-400/10` chip style.
+- **"Drafted" badge**: `text-[9px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-1.5 py-px rounded-sm`.
+- **Sub-position badge** (OF cards): Same pattern but `text-zinc-600 bg-zinc-800`.
+
+### Card States
+
+| State | Accent bar | Background | Extra |
+|-------|-----------|------------|-------|
+| Default | `bg-zinc-700` | `bg-zinc-900/80` | — |
+| Hovered | `bg-zinc-700` | `bg-zinc-900` | — |
+| Selected (clicked) | `bg-zinc-500` | `bg-zinc-900/80` | Draft button visible |
+| Reordered (dragged) | `bg-amber-500` | `bg-zinc-900/80` | Draft button visible |
+| Drafted | `bg-emerald-500` | `bg-emerald-950/40` | "Drafted" badge, glow shadow |
+| Dragging | `bg-zinc-700` | — | `opacity-0.4`, `scale-[1.02]`, `shadow-2xl` |
+
+### Position Row Labels
+
+- `w-12`, `font-display font-bold text-sm uppercase tracking-wider`
+- `text-zinc-400 bg-zinc-900/60 rounded-sm border-l-2 border-zinc-700`
+
+### Load More Trigger
+
+- Same `w-48` as cards, `rounded-sm`, `border border-dashed border-zinc-700/50`
+- `bg-zinc-900/30`, chevron icon + `text-[10px] font-bold uppercase tracking-wider`
+
+### Component Pattern Rules
+
+1. **Custom cards over shadcn Card** — `PlayerCard` uses raw `div` with utility classes, not the shadcn `Card` component. This gives full control over the scoreboard aesthetic without fighting shadcn defaults.
+2. **shadcn for structural UI** — `Sheet`, `Button`, `Badge` are still used for the header, My Team drawer, and toolbar controls where standard component behavior is needed.
+3. **State through color, not shape** — Card dimensions never change between states. Only color (accent bar, background, text) communicates state. This keeps layouts stable during scanning.
+4. **Conditional rendering** — Draft button is not hidden/shown with CSS. It is conditionally rendered (`showDraft && ...`) to keep the DOM clean.
+5. **No decorative borders** — Cards have no visible border. State is communicated through the left accent bar and background color only.
+
+### Spacing & Layout Constants
+
+| Constant | Value | Used in |
+|----------|-------|---------|
+| `CARD_WIDTH` | 200 (192px card + 8px gap) | `position-row.tsx` fit-to-screen calculation |
+| `LABEL_WIDTH` | 60 (48px label + 12px gap) | `position-row.tsx` available width |
+| `PADDING` | 48 (page padding) | `position-row.tsx` available width |
+| `LOAD_MORE_BATCH` | 10 | `position-row.tsx` pagination |
+| Row gap | `gap-2` (8px) | Between cards |
+| Section gap | `space-y-3` (12px) | Between position rows |
+| Page padding | `p-4 md:p-6` | `draft-board.tsx` |
+
 ## Conventions
 
-- Follow shadcn/ui patterns for component structure
+- Follow shadcn/ui patterns for structural UI (Sheet, Button, Badge)
+- Use raw utility classes for data-dense components (PlayerCard)
 - Keep components in `src/components/`
 - Keep data/types in `src/lib/`
+- Keep hooks in `src/hooks/`
 - Use TypeScript throughout
