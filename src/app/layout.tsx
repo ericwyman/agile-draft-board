@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn("dark font-sans", geist.variable, oswald.variable)}>
-      <body className="min-h-screen">
+      <body className="min-h-screen bg-zinc-900">
         {children}
       </body>
     </html>

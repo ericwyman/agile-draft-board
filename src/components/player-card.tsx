@@ -74,14 +74,15 @@ export function PlayerCard({
   const statValue = isPitcher ? player.adp : player.war;
   const { last, first } = formatName(player.name);
   const showDraft = !isDrafted && (selected || isReordered);
+  const displayPos = player.subPosition || position;
 
   return (
     <div ref={setNodeRef} style={style} className="shrink-0">
       <div
         className={`
-          group relative w-48 overflow-hidden rounded-sm
+          group relative w-48 h-24 overflow-hidden rounded-sm
           cursor-grab active:cursor-grabbing touch-none
-          transition-all duration-150
+          transition-all duration-150 flex flex-col
           ${isDrafted
             ? 'bg-emerald-950/50 shadow-[0_0_12px_rgba(16,185,129,0.1)]'
             : 'bg-zinc-800/90 hover:bg-zinc-800'
@@ -95,16 +96,8 @@ export function PlayerCard({
         {/* Left accent bar */}
         <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar(isDrafted, isReordered, selected)} transition-colors duration-150`} />
 
-        {/* Dismiss button */}
-        <button
-          className="absolute top-1.5 right-1.5 z-10 size-6 flex items-center justify-center rounded-sm text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-colors"
-          onClick={(e) => { e.stopPropagation(); onDismiss(); }}
-          aria-label={`Dismiss ${player.name}`}
-        >
-          <XIcon className="size-3.5" />
-        </button>
-
-        <div className="pl-3.5 pr-7 py-2.5 flex gap-3">
+        {/* Top row: name + stat + X */}
+        <div className="pl-3.5 pr-2 pt-2 flex gap-2 items-start flex-1 min-h-0">
           {/* Name block */}
           <div className="flex-1 min-w-0">
             <div
@@ -119,7 +112,7 @@ export function PlayerCard({
           </div>
 
           {/* Stat block */}
-          <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2.5 py-1 ${
+          <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2 py-0.5 ${
             isPitcher ? 'bg-zinc-700/80' : warBg(statValue as number)
           }`}>
             <div className={`font-display text-lg font-bold leading-none tabular-nums ${
@@ -134,29 +127,36 @@ export function PlayerCard({
               {isPitcher ? 'ADP' : 'WAR'}
             </div>
           </div>
+
+          {/* Dismiss - top right corner */}
+          <button
+            className="shrink-0 size-5 flex items-center justify-center rounded-sm text-zinc-500 hover:text-zinc-100 hover:bg-zinc-700 transition-colors -mt-0.5 -mr-0.5"
+            onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+            aria-label={`Dismiss ${player.name}`}
+          >
+            <XIcon className="size-3" />
+          </button>
         </div>
 
-        {/* Bottom info bar */}
-        <div className="pl-3.5 pr-2 pb-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-zinc-300 tracking-wide">
+        {/* Bottom row: position + team + draft */}
+        <div className="pl-3.5 pr-2 pb-2 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-700 px-1.5 py-px rounded-sm shrink-0">
+              {displayPos}
+            </span>
+            <span className="text-xs text-zinc-300 truncate">
               {player.team}
             </span>
-            {player.subPosition && (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 bg-zinc-700 px-1.5 py-px rounded-sm">
-                {player.subPosition}
-              </span>
-            )}
             {isDrafted && (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 bg-emerald-500/15 px-1.5 py-px rounded-sm">
-                Drafted
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 bg-emerald-500/15 px-1.5 py-px rounded-sm shrink-0">
+                Mine
               </span>
             )}
           </div>
 
           {showDraft && (
             <button
-              className="text-[11px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-400/15 hover:bg-emerald-400/25 px-2.5 py-1 rounded-sm transition-colors"
+              className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-400/15 hover:bg-emerald-400/25 px-2.5 py-1 rounded-sm transition-colors"
               onClick={(e) => { e.stopPropagation(); onDraft(); }}
             >
               Draft

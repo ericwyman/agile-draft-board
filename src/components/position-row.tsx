@@ -102,7 +102,7 @@ export function PositionRow({
         {hasMore && (
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="shrink-0 w-48 rounded-sm border border-dashed border-zinc-600 flex flex-col items-center justify-center gap-1 text-zinc-400 hover:border-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer min-h-[68px] bg-zinc-800/40"
+            className="shrink-0 w-48 h-24 rounded-sm border border-dashed border-zinc-600 flex flex-col items-center justify-center gap-1 text-zinc-400 hover:border-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer bg-zinc-800/40"
           >
             <ChevronRightIcon className="size-4" />
             <span className="text-[10px] font-bold uppercase tracking-wider">
