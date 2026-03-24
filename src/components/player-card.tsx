@@ -23,24 +23,24 @@ function formatName(name: string): { last: string; first: string } {
 }
 
 function warColor(war: number): string {
-  if (war >= 5) return 'text-amber-400';
-  if (war >= 3) return 'text-emerald-400';
-  if (war >= 1.5) return 'text-sky-400';
-  return 'text-zinc-400';
+  if (war >= 5) return 'text-amber-300';
+  if (war >= 3) return 'text-emerald-300';
+  if (war >= 1.5) return 'text-sky-300';
+  return 'text-zinc-300';
 }
 
 function warBg(war: number): string {
-  if (war >= 5) return 'bg-amber-400/10';
-  if (war >= 3) return 'bg-emerald-400/10';
-  if (war >= 1.5) return 'bg-sky-400/10';
-  return 'bg-zinc-400/8';
+  if (war >= 5) return 'bg-amber-400/15';
+  if (war >= 3) return 'bg-emerald-400/15';
+  if (war >= 1.5) return 'bg-sky-400/15';
+  return 'bg-zinc-400/10';
 }
 
 function accentBar(isDrafted: boolean, isReordered: boolean, selected: boolean): string {
-  if (isDrafted) return 'bg-emerald-500';
-  if (isReordered) return 'bg-amber-500';
-  if (selected) return 'bg-zinc-500';
-  return 'bg-zinc-700';
+  if (isDrafted) return 'bg-emerald-400';
+  if (isReordered) return 'bg-amber-400';
+  if (selected) return 'bg-zinc-400';
+  return 'bg-zinc-600';
 }
 
 export function PlayerCard({
@@ -83,8 +83,8 @@ export function PlayerCard({
           cursor-grab active:cursor-grabbing touch-none
           transition-all duration-150
           ${isDrafted
-            ? 'bg-emerald-950/40 shadow-[0_0_12px_rgba(16,185,129,0.08)]'
-            : 'bg-zinc-900/80 hover:bg-zinc-900'
+            ? 'bg-emerald-950/50 shadow-[0_0_12px_rgba(16,185,129,0.1)]'
+            : 'bg-zinc-800/90 hover:bg-zinc-800'
           }
           ${isDragging ? 'shadow-2xl shadow-black/40 scale-[1.02]' : ''}
         `}
@@ -97,58 +97,58 @@ export function PlayerCard({
 
         {/* Dismiss button */}
         <button
-          className="absolute top-1 right-1 z-10 size-5 flex items-center justify-center rounded-sm text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
+          className="absolute top-1.5 right-1.5 z-10 size-6 flex items-center justify-center rounded-sm text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-colors"
           onClick={(e) => { e.stopPropagation(); onDismiss(); }}
           aria-label={`Dismiss ${player.name}`}
         >
-          <XIcon className="size-3" />
+          <XIcon className="size-3.5" />
         </button>
 
-        <div className="pl-3 pr-6 py-2 flex gap-3">
+        <div className="pl-3.5 pr-7 py-2.5 flex gap-3">
           {/* Name block */}
           <div className="flex-1 min-w-0">
             <div
-              className="font-display text-base font-semibold uppercase leading-[1.1] tracking-wide text-zinc-100 truncate"
+              className="font-display text-base font-semibold uppercase leading-[1.1] tracking-wide text-white truncate"
               title={last}
             >
               {last}
             </div>
-            <div className="text-[11px] text-zinc-500 leading-tight truncate">
+            <div className="text-xs text-zinc-300 leading-tight truncate mt-0.5">
               {first}
             </div>
           </div>
 
           {/* Stat block */}
-          <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2 py-0.5 ${
-            isPitcher ? 'bg-zinc-800/80' : warBg(statValue as number)
+          <div className={`shrink-0 flex flex-col items-center justify-center rounded-sm px-2.5 py-1 ${
+            isPitcher ? 'bg-zinc-700/80' : warBg(statValue as number)
           }`}>
             <div className={`font-display text-lg font-bold leading-none tabular-nums ${
-              isPitcher ? 'text-zinc-300' : warColor(statValue as number)
+              isPitcher ? 'text-zinc-200' : warColor(statValue as number)
             }`}>
               {isPitcher
                 ? Math.round(statValue as number)
                 : (statValue as number).toFixed(1)
               }
             </div>
-            <div className="text-[9px] uppercase tracking-widest text-zinc-500 font-medium">
+            <div className="text-[10px] uppercase tracking-widest text-zinc-400 font-medium">
               {isPitcher ? 'ADP' : 'WAR'}
             </div>
           </div>
         </div>
 
         {/* Bottom info bar */}
-        <div className="pl-3 pr-2 pb-2 flex items-center justify-between">
+        <div className="pl-3.5 pr-2 pb-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-zinc-500 tracking-wide">
+            <span className="text-xs font-medium text-zinc-300 tracking-wide">
               {player.team}
             </span>
             {player.subPosition && (
-              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 bg-zinc-800 px-1.5 py-px rounded-sm">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 bg-zinc-700 px-1.5 py-px rounded-sm">
                 {player.subPosition}
               </span>
             )}
             {isDrafted && (
-              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-1.5 py-px rounded-sm">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 bg-emerald-500/15 px-1.5 py-px rounded-sm">
                 Drafted
               </span>
             )}
@@ -156,7 +156,7 @@ export function PlayerCard({
 
           {showDraft && (
             <button
-              className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 px-2.5 py-1 rounded-sm transition-colors"
+              className="text-[11px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-400/15 hover:bg-emerald-400/25 px-2.5 py-1 rounded-sm transition-colors"
               onClick={(e) => { e.stopPropagation(); onDraft(); }}
             >
               Draft

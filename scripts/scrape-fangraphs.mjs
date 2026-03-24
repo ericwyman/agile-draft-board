@@ -84,42 +84,23 @@ function parsePositionArticle(html, position) {
 }
 
 /**
- * Extract team name from the heading/context above each table.
- * Fangraphs uses h3 or strong tags for team names before each table.
+ * Parse a Fangraphs positional power rankings article.
+ * Structure: div.table-depth-chart contains:
+ *   - div.depth-chart-header with span.depth-chart-header-name (team name)
+ *   - div.table-wrapper with the player data table
  */
 function parsePositionArticleWithTeams(html, position) {
   const $ = load(html);
   const players = [];
   const seen = new Set();
 
-  // Get the article content area
-  const content = $('.fullpostcontent, .article-content, .post-content, article').first();
-  const root = content.length ? content : $('body');
+  $('div.table-depth-chart').each((_, dc) => {
+    const team = $(dc).find('.depth-chart-header-name').first().text().trim();
+    const table = $(dc).find('div.table-wrapper table').first();
+    if (!table.length) return;
 
-  // Walk through elements to pair team headers with tables
-  let currentTeam = '';
-
-  root.find('h3, h4, strong, table').each((_, el) => {
-    const tag = el.tagName?.toLowerCase() || el.name?.toLowerCase();
-
-    if (tag !== 'table') {
-      // This might be a team header
-      const text = $(el).text().trim();
-      // Team headers are typically short (team name) or "1. Team Name"
-      const teamMatch = text.match(/^\d+\.\s*(.+)/);
-      if (teamMatch) {
-        currentTeam = teamMatch[1].trim();
-      } else if (text.length < 40 && text.length > 2) {
-        // Could be a team name without numbering
-        currentTeam = text;
-      }
-      return;
-    }
-
-    // Process table rows
-    const rows = $(el).find('tr');
-    rows.each((i, row) => {
-      if (i === 0) return;
+    table.find('tr').each((i, row) => {
+      if (i === 0) return; // skip header
       const cells = $(row).find('td');
       if (cells.length < 9) return;
 
@@ -132,7 +113,7 @@ function parsePositionArticleWithTeams(html, position) {
 
       players.push({
         name,
-        team: currentTeam,
+        team,
         pa: parseInt($(cells[1]).text().trim()) || 0,
         avg: $(cells[2]).text().trim(),
         obp: $(cells[3]).text().trim(),
@@ -154,9 +135,11 @@ function parseBullpenArticle(html) {
   const $ = load(html);
   const rpNames = new Set();
 
-  $('table').each((_, table) => {
-    const rows = $(table).find('tr');
-    rows.each((i, row) => {
+  $('div.table-depth-chart').each((_, dc) => {
+    const table = $(dc).find('div.table-wrapper table').first();
+    if (!table.length) return;
+
+    table.find('tr').each((i, row) => {
       if (i === 0) return;
       const cells = $(row).find('td');
       if (cells.length < 2) return;

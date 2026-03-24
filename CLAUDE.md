@@ -60,7 +60,8 @@ Utilitarian, high-contrast, dark-mode-only. Designed for rapid visual scanning d
 
 - **Display font**: `Oswald` (CSS: `font-display`) — condensed, bold, uppercase. Used for player last names, stat numbers, and position labels. Loaded via `next/font/google` with `--font-display` CSS variable.
 - **Body font**: `Geist` (CSS: `font-sans`) — clean sans-serif for first names, metadata, UI controls.
-- **Text sizes**: Last name `text-base`, first name `text-[11px]`, stat number `text-lg`, labels `text-[9px]`, metadata `text-[11px]`.
+- **Text sizes**: Last name `text-base`, first name `text-xs`, stat number `text-lg`, labels `text-[10px]`, metadata `text-xs`.
+- **Legibility**: Target audience is Gen-X/elder millennials. Minimum text size is `text-[10px]`. Prefer zinc-200/300 over zinc-400/500 for readable text. White for primary names.
 - **Uppercase + tracking**: All labels, badges, and position tags use `uppercase tracking-wider` or `tracking-widest`.
 
 ### Color Palette
@@ -69,17 +70,17 @@ Dark zinc base, semantic accent colors for state:
 
 | Element | Color | Class |
 |---------|-------|-------|
-| Card background | zinc-900/80 | `bg-zinc-900/80` |
-| Card hover | zinc-900 | `hover:bg-zinc-900` |
+| Card background | zinc-800/90 | `bg-zinc-800/90` |
+| Card hover | zinc-800 | `hover:bg-zinc-800` |
 | Page background | shadcn dark theme | `bg-background` |
-| Primary text | zinc-100 | `text-zinc-100` |
-| Secondary text | zinc-500 | `text-zinc-500` |
-| Muted text | zinc-600 | `text-zinc-600` |
-| Drafted state | emerald-500 | accent bar, badge, glow |
-| Reordered state | amber-500 | accent bar |
-| Selected state | zinc-500 | accent bar |
-| Draft action | emerald-400 | button text + bg |
-| Dismiss action | zinc-600 → zinc-300 | hover transition |
+| Primary text (last name) | white | `text-white` |
+| Secondary text (first name, team) | zinc-300 | `text-zinc-300` |
+| Label text (stat labels, badges) | zinc-400 | `text-zinc-400` |
+| Drafted state | emerald-400 | accent bar, badge, glow |
+| Reordered state | amber-400 | accent bar |
+| Selected state | zinc-400 | accent bar |
+| Draft action | emerald-300 | button text + bg |
+| Dismiss action | zinc-400 → zinc-100 | hover transition |
 
 ### WAR Stat Color Tiers
 
@@ -87,12 +88,12 @@ Stats are color-coded for instant value recognition:
 
 | Tier | WAR | Text color | Background |
 |------|-----|-----------|------------|
-| Elite | 5.0+ | `text-amber-400` | `bg-amber-400/10` |
-| Strong | 3.0+ | `text-emerald-400` | `bg-emerald-400/10` |
-| Solid | 1.5+ | `text-sky-400` | `bg-sky-400/10` |
-| Below | <1.5 | `text-zinc-400` | `bg-zinc-400/8` |
+| Elite | 5.0+ | `text-amber-300` | `bg-amber-400/15` |
+| Strong | 3.0+ | `text-emerald-300` | `bg-emerald-400/15` |
+| Solid | 1.5+ | `text-sky-300` | `bg-sky-400/15` |
+| Below | <1.5 | `text-zinc-300` | `bg-zinc-400/10` |
 
-Pitcher ADP uses neutral `text-zinc-300` on `bg-zinc-800/80`.
+Pitcher ADP uses `text-zinc-200` on `bg-zinc-700/80`.
 
 ### Card Anatomy
 
