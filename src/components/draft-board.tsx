@@ -14,6 +14,8 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useDraftState } from '@/hooks/use-draft-state';
 import { PositionRow } from '@/components/position-row';
 import { MyTeamSheet } from '@/components/my-team-sheet';
+import { Button } from '@/components/ui/button';
+import { Rows2Icon, Rows3Icon } from 'lucide-react';
 import type { Player } from '@/lib/types';
 import { POSITION_ORDER, playerKey } from '@/lib/types';
 
@@ -28,9 +30,13 @@ export function DraftBoard({ positions }: DraftBoardProps) {
     undraft,
     isDismissed,
     isDrafted,
+    isReordered,
+    markReordered,
     drafted,
     setPositionOrder,
     getPositionOrder,
+    rowsPerPosition,
+    setRowsPerPosition,
   } = useDraftState();
 
   const sensors = useSensors(
@@ -38,7 +44,6 @@ export function DraftBoard({ positions }: DraftBoardProps) {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // Build ordered key arrays for each position
   const orderedKeysByPosition = useMemo(() => {
     const result: Record<string, string[]> = {};
     for (const pos of POSITION_ORDER) {
@@ -46,7 +51,6 @@ export function DraftBoard({ positions }: DraftBoardProps) {
       const defaultKeys = players.map((p) => playerKey(pos, p.name));
       const saved = getPositionOrder(pos);
       if (saved) {
-        // Merge: use saved order but include any new players not yet in saved order
         const savedSet = new Set(saved);
         const merged = [...saved.filter((k) => defaultKeys.includes(k))];
         for (const k of defaultKeys) {
@@ -68,7 +72,6 @@ export function DraftBoard({ positions }: DraftBoardProps) {
       const activeId = active.id as string;
       const overId = over.id as string;
 
-      // Find which position this belongs to
       const position = activeId.split('::')[0];
       const currentKeys = orderedKeysByPosition[position];
       if (!currentKeys) return;
@@ -79,19 +82,41 @@ export function DraftBoard({ positions }: DraftBoardProps) {
 
       const newKeys = arrayMove(currentKeys, oldIndex, newIndex);
       setPositionOrder(position, newKeys);
+      markReordered(activeId);
     },
-    [orderedKeysByPosition, setPositionOrder]
+    [orderedKeysByPosition, setPositionOrder, markReordered]
   );
+
+  const toggleRows = useCallback(() => {
+    setRowsPerPosition(rowsPerPosition === 1 ? 2 : 1);
+  }, [rowsPerPosition, setRowsPerPosition]);
 
   return (
     <main className="p-4 md:p-6">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-xl md:text-2xl font-bold">Agile Draft Board</h1>
-        <MyTeamSheet
-          positions={positions}
-          drafted={drafted}
-          onUndraft={undraft}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleRows}
+            title={rowsPerPosition === 1 ? 'Switch to 2 rows' : 'Switch to 1 row'}
+          >
+            {rowsPerPosition === 1 ? (
+              <Rows2Icon className="size-4" />
+            ) : (
+              <Rows3Icon className="size-4" />
+            )}
+            <span className="hidden sm:inline">
+              {rowsPerPosition === 1 ? '2 Rows' : '1 Row'}
+            </span>
+          </Button>
+          <MyTeamSheet
+            positions={positions}
+            drafted={drafted}
+            onUndraft={undraft}
+          />
+        </div>
       </header>
 
       <DndContext
@@ -106,8 +131,10 @@ export function DraftBoard({ positions }: DraftBoardProps) {
               position={pos}
               players={positions[pos] || []}
               orderedKeys={orderedKeysByPosition[pos] || []}
+              rowCount={rowsPerPosition}
               isDismissed={isDismissed}
               isDrafted={isDrafted}
+              isReordered={isReordered}
               onDismiss={dismiss}
               onDraft={draft}
             />

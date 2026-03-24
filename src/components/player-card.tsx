@@ -11,6 +11,7 @@ type PlayerCardProps = {
   player: Player;
   position: string;
   isDrafted: boolean;
+  isReordered: boolean;
   onDismiss: () => void;
   onDraft: () => void;
 };
@@ -20,6 +21,7 @@ export function PlayerCard({
   player,
   position,
   isDrafted,
+  isReordered,
   onDismiss,
   onDraft,
 }: PlayerCardProps) {
@@ -50,7 +52,9 @@ export function PlayerCard({
         className={`w-40 transition-colors ${
           isDrafted
             ? 'ring-2 ring-emerald-500/60 bg-emerald-950/30'
-            : ''
+            : isReordered
+              ? 'ring-1 ring-amber-500/50'
+              : ''
         } ${isDragging ? 'shadow-lg shadow-primary/20' : ''}`}
       >
         <CardHeader className="gap-0.5 pb-0">
