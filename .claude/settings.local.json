@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth:*)",
+      "Bash(vercel whoami:*)",
+      "WebFetch(domain:nfc.shgn.com)",
+      "Bash(curl -s -L \"https://nfc.shgn.com/adp/baseball\" -o /tmp/adp_page.html)",
+      "Read(//tmp/**)",
+      "WebSearch",
+      "WebFetch(domain:www.fantasypros.com)",
+      "WebFetch(domain:help.fantasyfootballcalculator.com)",
+      "WebFetch(domain:blogs.fangraphs.com)",
+      "Bash(wc:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
