@@ -130,7 +130,7 @@ export function PlayerCard({
 
           {/* Dismiss - top right corner */}
           <button
-            className="shrink-0 size-5 flex items-center justify-center rounded-sm text-zinc-500 hover:text-zinc-100 hover:bg-zinc-700 transition-colors -mt-0.5 -mr-0.5"
+            className="shrink-0 size-5 flex items-center justify-center rounded-sm text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-colors -mt-0.5 -mr-0.5"
             onClick={(e) => { e.stopPropagation(); onDismiss(); }}
             aria-label={`Dismiss ${player.name}`}
           >
